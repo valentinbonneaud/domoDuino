@@ -3,8 +3,6 @@ domoArduino
 
 Personal domotic &amp; weather station project with an Arduino UNO.
 
-Actual Version : v0.1 - Still under development
-
 This is a fully functional home domotic project with 8 programables outputs (relays), controlable with an IR remote.
 
 There is also a weather station functionality with temperature, humidity sensors and a Geiger counter.
@@ -14,12 +12,14 @@ The domotic part can be configured with a webpage (on the Arduino).
 Domotic
 ---------
 
-Domotic Functionalities (through the Arduino webserver) :
+Domotic Functionalities :
 
 - Visualize the state of all outputs,
 - Enable or disable any output,
-- Set a timer (fixed hour for on/off or count-down) to an output,
+- Set a timer (fixed hour for on/off or count-down) to an output (in futures versions),
 - Configure the actions of the IR remote.
+
+All these actions can be done through the web page of the server and not directly to the Arduino because of the limited ressources of the Arduino. However, a small webserver is running on the Arduino, but only for synchronization purposes (synchronization between the server and the arduino of the output states, ...).
 
 Weather Station
 -------------
@@ -48,7 +48,12 @@ The repro is splitted into two parts, the first one is all the code concerning t
 History
 ------------
 
-Last version : v0.1
+Last version : v0.2 - Still under development
+
+v0.2 :
+
+- Server side : Website done except the sensors page (plots)
+- Server side : Databases done
 
 v0.1 :
 

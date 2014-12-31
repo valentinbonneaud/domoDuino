@@ -9,16 +9,14 @@ function getMenu($page) {
 <html>
   <head>
     <meta charset = 'UTF-8'>
-    <title>Main</title>
+    <title>domoDuino</title>
 
     <link rel='stylesheet' type='text/css' href='../bootstrap/css/bootstrap.min.css'>
     <link rel='stylesheet' type='text/css' href='css/main.css'>
     <link href='../bootstrap/css/bootstrap-responsive.min.css' rel='stylesheet'>
 
-    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
+    <script src='//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js'></script>
     <script src='../bootstrap/js/bootstrap.min.js'></script>
-    <script src='../bootstrap/js/bootstrap-datepicker.js'></script>
-    <script src='../bootstrap/js/moment.js'></script>
 
   </head>
   <body>
@@ -26,7 +24,7 @@ function getMenu($page) {
     <div class='navbar navbar-inverse navbar-fixed-top'>
       <div class='navbar-inner'>
         <div class='container'>
-          <a class='brand' href='main.php' style = 'color: white'>Arduino UNO</a>
+          <a class='brand' href='main.php' style = 'color: white'>domoDuino</a>
           <div class='nav nav-collapse collapse'>";
 	
 	if($page == "main") echo "<li class='active'><a href='main.php'>Domotic</a></li>";

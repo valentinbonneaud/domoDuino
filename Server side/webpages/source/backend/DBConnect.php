@@ -13,19 +13,19 @@ class DBConnect{
 	// Create connection
 	public function connect(){
 		
-		$this -> con = mysqli_connect(HOST_SERVER, USERNAME, PASSWORD, DATABASE_NAME);
+		$this->con = mysqli_connect(HOST_SERVER, USERNAME, PASSWORD, DATABASE_NAME);
 
 		// Check connection
 		if(mysqli_connect_errno()){
 			return false;
 		}
 
-		return $this -> con;
+		return $this->con;
 	}
 
 	// Close connection
 	public function close(){
-		mysqli_close($this -> con);
+		mysqli_close($this->con);
 	}
 }
 

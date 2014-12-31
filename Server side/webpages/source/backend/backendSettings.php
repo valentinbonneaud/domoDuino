@@ -4,24 +4,19 @@ require_once(dirname(__FILE__).'/DBUser.php');
 require_once(dirname(__FILE__).'/ArduinoConnect.php');
 require_once(dirname(__FILE__).'/Sensors.php');
 
-session_start();
-if(isset($_SESSION['username'])){
-    $username = htmlspecialchars($_SESSION['username']);
-    $password = $_SESSION['pass'];
-} else {
-    $username = null;
-}
+// We check if the user is logged, if yes, the variables $username, $ip, $idUser are created
+include("checkLoginBackend.php");
 
 if(isset($_POST['action']))
 {
-	$action = htmlspecialchars($_POST['action']);
+	$action = $_POST['action'];
 
-	if($action == 'nameChange') {
+	if($action == 'nameOutputChange') {
 		if(isset($_POST['data']))
 		{
 			$data = $_POST['data'];
 			$arduino = new ArduinoConnect();
-			if($arduino->updateOutputName(htmlspecialchars($data['id']), htmlspecialchars($data['text'])))
+			if($arduino->updateOutputName($data['id'], $data['text']))
 				displayJSON(SUCCESS, $_POST);
 			else
 				displayJSON(FAIL, $_POST);
@@ -30,15 +25,10 @@ if(isset($_POST['action']))
 		if(isset($_POST['data']))
 		{
 			$data = $_POST['data'];
-			$type = $data['type'];
-			$i = htmlspecialchars($data['i']);
-			$j = $data['j'];
+			$i = $data['i'];
 			$arduino = new ArduinoConnect();
 
-			$arr = array(1,1,1,1,1,1,1,1);
-
-			if($type == "on") $arr[$j] = 2;
-			else if ($type == "off") $arr[$j] = 3;
+			$arr = $data['buttons'];
 
 			if($arduino->sendUpdateRemote($i,$arr))
 				displayJSON(SUCCESS, $_POST);
@@ -49,8 +39,8 @@ if(isset($_POST['action']))
 		if(isset($_POST['data']))
 		{
 			$data = $_POST['data'];
-			$oldPassword = htmlspecialchars($data['old']);
-			$newPassword = htmlspecialchars($data['new']);
+			$oldPassword = $data['old'];
+			$newPassword = $data['new'];
 			$dbUser = new DBUser();
 			if($dbUser->changePassword($username, $oldPassword, $newPassword))
 				displayJSON(SUCCESS, $_POST);
@@ -61,10 +51,10 @@ if(isset($_POST['action']))
 		if(isset($_POST['data']))
 		{
 			$data = $_POST['data'];
-			$id = htmlspecialchars($data['id']);
-			$text = htmlspecialchars($data['text']);
+			$idSensor = $data['id'];
+			$text = $data['text'];
 			$sensors = new Sensors();
-			if($sensors->updateSensorsUnit($id, $text))
+			if($sensors->updateSensorsUnit($idSensor, $text))
 				displayJSON(SUCCESS, $_POST);
 			else
 				displayJSON(FAIL, $_POST);
@@ -73,10 +63,35 @@ if(isset($_POST['action']))
 		if(isset($_POST['data']))
 		{
 			$data = $_POST['data'];
-			$id = htmlspecialchars($data['id']);
-			$text = htmlspecialchars($data['text']);
+			$idSensor = $data['id'];
+			$text = $data['text'];
 			$sensors = new Sensors();
-			if($sensors->updateSensorsName($id, $text))
+			if($sensors->updateSensorsName($idSensor, $text))
+				displayJSON(SUCCESS, $_POST);
+			else
+				displayJSON(FAIL, $_POST);
+		}
+	} else if($action == 'deleteSensor') {
+		if(isset($_POST['data']))
+		{
+			$data = $_POST['data'];
+			$id = $data['id'];
+			$address = $data['address'];
+			$sensors = new Sensors();
+			if($sensors->deleteSensor($address))
+				displayJSON(SUCCESS, $_POST);
+			else
+				displayJSON(FAIL, $_POST);
+		}
+	} else if($action == 'changeIP') {
+		if(isset($_POST['data']))
+		{
+			$data = $_POST['data'];
+			$ip = $data['ip'];
+			$arduino = new ArduinoConnect();
+			// we check that the ip given by the user is correct and that an arduino is behind this ip
+			$_POST['ping'] = $arduino->testArduino($ip);
+			if($arduino->updateArduinoURL($ip))
 				displayJSON(SUCCESS, $_POST);
 			else
 				displayJSON(FAIL, $_POST);

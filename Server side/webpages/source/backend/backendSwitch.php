@@ -3,13 +3,8 @@
 require_once(dirname(__FILE__).'/DBDisplay.php');
 require_once(dirname(__FILE__).'/ArduinoConnect.php');
 
-session_start();
-if(isset($_SESSION['pass'])){
-    $pass = $_SESSION['pass'];
-} else {
-    $pass = null;
-}
-
+// We check if the user is logged, if yes, the variables $username, $ip, $idUser are created
+include("checkLoginBackend.php");
 
 if(isset($_POST['type']) && isset($_POST['i'])){
 

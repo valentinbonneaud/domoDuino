@@ -1,13 +1,11 @@
-domoArduino
+Domoduino
 ===========
 
-Personal domotic &amp; weather station project with an Arduino UNO.
+This is a personal domotic &amp; weather station project with an Arduino UNO.
 
-This is a fully functional home domotic project with 8 programables outputs (relays), controlable with an IR remote.
+The domotic part is constitued of 8 programables outputs (relays) controllable with an IR remote and through a webserver (on/off buttons and clock automaton).
 
-There is also a weather station functionality with temperature, humidity sensors and a Geiger counter.
-
-The domotic part can be configured with a webpage (on the Arduino).
+There is also a weather station part which measure various informations such as temperature, humidity and radiation (beta and gamma). All the data is sent to a remote server for storage and visualization.
 
 Domotic
 ---------
@@ -19,52 +17,61 @@ Domotic Functionalities :
 - Set a timer (fixed hour for on/off or count-down) to an output (in futures versions),
 - Configure the actions of the IR remote.
 
-All these actions can be done through the web page of the server and not directly to the Arduino because of the limited ressources of the Arduino. However, a small webserver is running on the Arduino, but only for synchronization purposes (synchronization between the server and the arduino of the output states, ...).
+All these actions can be done through the web page of the server and not directly to the Arduino because of the limited ressources of the Arduino. However, a small webserver is running on the Arduino, but only for synchronization purposes (synchronization between the server and the arduino of the output states, IR remote actions, ...).
 
 Weather Station
 -------------
 
 The weather station is contitued of 
 
-- DS18S20 (1-Wire) temperature sensors,
+- DS18X20 (1-Wire) temperature sensors,
 - DHT11 humidity (and temperature) sensors,
-- SBM-20 Geiger tube with detector board.
+- SBM-20/BOI-33 Geiger tube with detector board.
 
-All the sensors' informations are sent to a webserver with PHP and MySQL for handling the data. This server is accessible via a web browser to diplay HTML5 graph of the measurements (over differents time axis).
+All the sensors' informations are sent to a webserver with PHP/JS and MySQL for handling the data. This server is accessible via a web browser to diplay HTML5 graph of the measurements (over differents time axis) and some statistics.
 
 Schema
 -------------
 
 Will be uploaded soon !
 
-An RTC (DS1337) is connnected via I2C to the Arduino, like that even without Internet connection, the arduino can perform the time related actions (timer on outputs).
-
-
 Structure of the repro
 ----------------------
 
 The repro is splitted into two parts, the first one is all the code concerning the Arduino board, the second is for the remote server.
 
+There is a README in each part for more precise details on the implementation.
+
 History
 ------------
 
-Last version : v0.2 - Still under development
+Last version : v0.4 - Still under development
+
+v0.4 :
+
+- Server side : Communication between the arduino and the server done, modification of the arduino ip added in user setting (with a verification of reachability), code cleaned and secured against various types of attacks, statistics added.
+- Arduino side : Communication between the arduino and the server done, request parser added, IR remote added.
+
+v0.3 :
+
+- Server side : Plot done using highchart JS lib, manage sensors (rename, change unit, delete), user account setting added.
+- Arduino side : Server/Client TCP added, code cleaned.
 
 v0.2 :
 
-- Server side : Website done except the sensors page (plots)
-- Server side : Databases done
+- Server side : Website done except the sensors page (plots).
+- Server side : Databases done.
 
 v0.1 :
 
-- Support of the DS18S20 sensors
-- Support of the RTC
+- Support of the DS18S20 sensors.
+- Support of the RTC.
 
 
 License
 -------------
 
-All this project is distributed under the MIT License. Have fun with this project ! If you want to modify it, do it !
+All this project is distributed under the MIT License. Have fun with this project ! If you want to modify it, do it (and send me an email through my website to see what awesone things you have done !)
 
 The MIT License (MIT)
 

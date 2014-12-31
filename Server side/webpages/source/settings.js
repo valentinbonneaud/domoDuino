@@ -16,11 +16,13 @@ App.settings = (function($){
 	}
 
 	var action = {
-		nameChange: 'nameChange',
+		nameOutputChange: 'nameOutputChange',
 		changeAction: 'changeAction',
 		changePassword: 'changePassword',
 		changeSensorUnit: 'changeSensorUnit',
-		changeSensorName: 'changeSensorName'
+		changeSensorName: 'changeSensorName',
+		deleteSensor: 'deleteSensor',
+		changeIP: 'changeIP'
 	}
 
 	function successHandler(returnAction, data){
@@ -40,11 +42,11 @@ App.settings = (function($){
 				document.getElementById("nothing_"+data.data.data['i']+"_"+data.data.data['j']).disabled = true; 
 			}
 			$("#messages").append('<div class="alert alert-success">Change is saved.</div>');}
-		} else if(returnAction == action.nameChange) {
+		} else if(returnAction == action.nameOutputChange) {
 			if(data.status == transferResult.success){
 				$('#successMessage'+data.data.data['id']).removeClass('hidden');
 			} else {
-				$("#messages").append('<div class="alert alert-danger"><strong>Oh snap!</strong> Impossible to make the change.</div>');
+				addError();
 			}
 		} else if(returnAction == action.changePassword) {
 			if(data.status == transferResult.success){
@@ -58,7 +60,28 @@ App.settings = (function($){
 			}
 		} else if(returnAction == action.changeSensorUnit || returnAction == action.changeSensorName) {
 			if(data.status == transferResult.success){
-				$('#successMessageSensors'+data.data.data['id']).removeClass('hidden');
+				$('#successMessageSensors'+data.data.data['i']).removeClass('hidden');
+			} else {
+				addError();
+			}
+		} else if(returnAction == action.deleteSensor) {
+			if(data.status == transferResult.success){
+				$('#sensor'+data.data.data['i']).empty();
+			} else {
+				addError();
+			}
+		} else if(returnAction == action.changeIP) {
+			if(data.status == transferResult.success){
+				$('#successMessageIP').removeClass('hidden');
+
+				if(data.data['ping']) {
+					$('#connectedIP').removeClass('hidden');
+					$('#impossibleIP').addClass('hidden');
+				} else
+					$('#impossibleIP').removeClass('hidden');
+
+			} else {
+				addError();
 			}
 		}
 			
@@ -66,13 +89,17 @@ App.settings = (function($){
 
 	function removeMessages() {
 		$("#messages").empty();
-		var nbOutput = $("#NB_OUTPUT").text();
+		var nbOutput = escapeHtml($("#NB_OUTPUT").text());
 		for(var i=0;i<nbOutput;i++)
 			$('#successMessage'+i).addClass('hidden');
 
-		var nbSensors = $("#NB_SENSORS").text();
+		var nbSensors = escapeHtml($("#NB_SENSORS").text());
 		for(var i=0;i<nbSensors;i++)
 			$('#successMessageSensors'+i).addClass('hidden');
+
+		$('#successMessageIP').addClass('hidden');
+		$('#impossibleIP').addClass('hidden');
+		$('#connectedIP').addClass('hidden');
 
 		$('#oldPasswordGroup').removeClass('error');
 		$('#newPasswordGroup').removeClass('error');
@@ -83,19 +110,62 @@ App.settings = (function($){
 		$('#errorMessage1').addClass('hidden');
 	}
 
-	function errorHandler(returnAction, data){
+	function addError() {
 		$("#messages").append('<div class="alert alert-danger"><strong>Oh snap!</strong> Impossible to make the change.</div>');
 	}
 
-	function buttonOnClick(e){
+	function errorHandler(returnAction, data){
+		addError();
+	}
+
+	function buttonOnOffIR(e){
+		removeMessages();
+		e.preventDefault();
+		var nbOutput = escapeHtml($("#NB_OUTPUT").text());
+		origin = e['currentTarget']['id'].split('_');
+		var transferData = {};
+		transferData['type'] = escapeHtml(origin[0]);
+		transferData['i'] = escapeHtml(origin[1]);
+		transferData['j'] = escapeHtml(origin[2]);
+		var buttonType = escapeHtml(origin[0]);
+		var buttonI = escapeHtml(origin[1]);
+		var buttonJ = escapeHtml(origin[2]);
+
+		var valueButtons = {};
+
+		for(var j=0;j<nbOutput;j++) {
+			if(document.getElementById("on_"+buttonI+"_"+j).disabled)
+				valueButtons[j]=2;
+			else if(document.getElementById("off_"+buttonI+"_"+j).disabled)
+				valueButtons[j]=3;
+			else
+				valueButtons[j]=1;
+
+		}
+
+		// we also have to update the value of the clicked button because the disable field is not yet updated
+		if(buttonType == 'on')
+			valueButtons[buttonJ]=2;
+		else if(buttonType == 'off')
+			valueButtons[buttonJ]=3;
+		else
+			valueButtons[buttonJ]=1;
+
+		transferData['buttons'] = valueButtons;
+
+		App.ajax.call(action.changeAction, transferData, successHandler, errorHandler);
+		return false;
+	}
+
+	function buttonDeleteSensor(e){
 		removeMessages();
 		e.preventDefault();
 		origin = e['currentTarget']['id'].split('_');
 		var transferData = {};
-		transferData['type'] = origin[0];
-		transferData['i'] = origin[1];
-		transferData['j'] = origin[2];
-		App.ajax.call(action.changeAction, transferData, successHandler, errorHandler);
+		transferData['i'] = escapeHtml(origin[1]);
+		transferData['id'] = escapeHtml($("#idSensor_"+transferData['i']).text());
+		transferData['address'] = escapeHtml(e['currentTarget']['value']);
+		App.ajax.call(action.deleteSensor, transferData, successHandler, errorHandler);
 		return false;
 	}
 
@@ -104,9 +174,9 @@ App.settings = (function($){
 		e.preventDefault();
 		origin = e['currentTarget']['id'].split('_');
 		var transferData = {};
-		transferData['id'] = origin[1];
+		transferData['id'] = escapeHtml(origin[1]);
 		transferData['text'] = escapeHtml(e['currentTarget']['value']);
-		App.ajax.call(action.nameChange, transferData, successHandler, errorHandler);
+		App.ajax.call(action.nameOutputChange, transferData, successHandler, errorHandler);
 		return false;
 	}
 
@@ -115,7 +185,8 @@ App.settings = (function($){
 		e.preventDefault();
 		origin = e['currentTarget']['id'].split('_');
 		var transferData = {};
-		transferData['id'] = origin[1];
+		transferData['i'] = escapeHtml(origin[1]);
+		transferData['id'] = escapeHtml($("#idSensor_"+transferData['i']).text());
 		transferData['text'] = escapeHtml(e['currentTarget']['value']);
 		App.ajax.call(action.changeSensorName, transferData, successHandler, errorHandler);
 		return false;
@@ -126,9 +197,19 @@ App.settings = (function($){
 		e.preventDefault();
 		origin = e['currentTarget']['id'].split('_');
 		var transferData = {};
-		transferData['id'] = origin[1];
+		transferData['i'] = escapeHtml(origin[1]);
+		transferData['id'] = escapeHtml($("#idSensor_"+transferData['i']).text());
 		transferData['text'] = escapeHtml(e['currentTarget']['value']);
 		App.ajax.call(action.changeSensorUnit, transferData, successHandler, errorHandler);
+		return false;
+	}
+
+	function textUpdateIP(e){
+		removeMessages();
+		e.preventDefault();
+		var transferData = {};
+		transferData['ip'] = escapeHtml(e['currentTarget']['value']);
+		App.ajax.call(action.changeIP, transferData, successHandler, errorHandler);
 		return false;
 	}
 
@@ -136,17 +217,21 @@ App.settings = (function($){
 	return{
 		actions: function(){
 
-			var nbOutput = $("#NB_OUTPUT").text();
-			var nbButtonsIR = $("#NB_BUTTONS_IR").text();
-			var nbSensors = $("#NB_SENSORS").text();
+			var nbOutput = escapeHtml($("#NB_OUTPUT").text());
+			var nbButtonsIR = escapeHtml($("#NB_BUTTONS_IR").text());
+			var nbSensors = escapeHtml($("#NB_SENSORS").text());
 
 			// Listener for the IR remote buttons
 			for(var i=0;i<nbButtonsIR;i++)
 				for(var j=0;j<nbOutput;j++) {
-					$("#nothing_"+i+"_"+j).on('click', buttonOnClick);
-					$("#on_"+i+"_"+j).on('click', buttonOnClick);
-					$("#off_"+i+"_"+j).on('click', buttonOnClick);
+					$("#nothing_"+i+"_"+j).on('click', buttonOnOffIR);
+					$("#on_"+i+"_"+j).on('click', buttonOnOffIR);
+					$("#off_"+i+"_"+j).on('click', buttonOnOffIR);
 			}
+
+			// Listener for the delete sensor buttons
+			for(var i=0;i<nbSensors;i++)
+				$("#delete_"+i).on('click', buttonDeleteSensor);
 			
 			// Listener for the text field output name
 			for(var i=0;i<nbOutput;i++)
@@ -158,6 +243,9 @@ App.settings = (function($){
 				$("#nameSensor_"+i).on('keyup', textUpdateSensorName);
 				$("#unitSensor_"+i).on('keyup', textUpdateSensorUnit);
 			}
+
+			// Listener for ip field
+			$("#ip").on('keyup', textUpdateIP);
 
 
 			// Listener on password change button

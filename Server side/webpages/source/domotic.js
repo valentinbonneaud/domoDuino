@@ -45,8 +45,8 @@ App.manage = (function($){
 		e.preventDefault();
 		var transferData = {};
 		origin = e['currentTarget']['id'].split('_');
-		transferData['type'] = origin[0];
-		transferData['i'] = origin[1];
+		transferData['type'] = escapeHtml(origin[0]);
+		transferData['i'] = escapeHtml(origin[1]);
 
 		if(transferData['type'] == 'on')
 			App.ajax.call(action.on, transferData, successHandler, errorHandler);

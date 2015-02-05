@@ -18,6 +18,8 @@ Generalities
 
 There is a login system on the website to protect the access of the platform. Like that all actions need an authentication or an api key.
 
+All the website is coded using the power of jQuery and Bootstrap. You never have to refresh a webpage !
+
 Data Collection
 -----------------
 

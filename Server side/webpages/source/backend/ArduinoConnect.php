@@ -121,6 +121,34 @@ class ArduinoConnect{
 		return $this->decode($rep);
 	}
 
+	public function getAlarm($i){
+
+		// we form the url
+		$url = $this->ip."?t=4&a=$i&b=0&e";
+
+		// We take the answer of the arduino
+		$rep = preg_replace('/\s+/', ' ', trim(file_get_contents($url)));
+		
+		return $this->decodeAlarm($rep);
+	}
+
+	public function sendUpdateAlarm($i,$hourAlarm, $minAlarm, $durHour, $durMin, $days, $reverse){
+
+
+		// we form the url
+		$x = $this->encodeAlarm($hourAlarm, $minAlarm, $durHour, $durMin, $days, $reverse);
+		
+		$url = $this->ip."?t=5&a=".$i."&b=".$x."&e";
+
+		// We take the answer of the arduino
+		$rep = preg_replace('/\s+/', ' ', trim(file_get_contents($url)));
+
+		if($rep == '1')
+			return true;
+		else
+			return false;
+	}
+
 	public function getOutputsNames(){
 
 		$sql = "SELECT o.".OUTPUTS_nb." AS nb, o.".OUTPUTS_name." AS name FROM ".OUTPUTS_table." o WHERE o.".OUTPUTS_userID." = '".mysqli_real_escape_string($this->connect,$this->idUser)."';";
@@ -199,6 +227,47 @@ class ArduinoConnect{
 		{
 			$out[$i] = ($x/pow(4,$i))%4;
 		}
+
+		return $out;
+	}
+
+	public function encodeAlarm($hourAlarm, $minAlarm, $durHour, $durMin, $days, $reverse) {
+
+		$hourEncodedAlarm = 60*$hourAlarm + $minAlarm; // max value = 1439
+		$hourEncodedDur = 60*$durHour + $durMin;
+
+		$out = $hourEncodedAlarm*1440 + $hourEncodedDur;
+
+		// days is coded on 7 bits -> max value = 127
+
+		$out = $out*128+$days;
+		$out = 2*$out;
+
+		if($reverse == "true")
+			$out += 1;
+		
+
+		return $out;
+	}
+
+	private function decodeAlarm($x) { 
+
+		$out = array();
+		
+		$out['reverse'] = $x%2;
+		$x = intval($x/2);
+		$out['days'] = $x%128;
+		$x = intval($x/128);
+		$encodedDate = $x%1440;
+		$out['duration'] = array();
+		$out['duration']['min'] = $encodedDate%60;
+		$out['duration']['hour'] = intval($encodedDate/60);
+		$x = intval($x/1440);
+		$encodedDate = $x%1440;
+		$out['alarm'] = array();
+		$out['alarm']['min'] = $encodedDate%60;
+		$out['alarm']['hour'] = intval($encodedDate/60);
+
 
 		return $out;
 	}

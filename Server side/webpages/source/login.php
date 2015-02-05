@@ -9,7 +9,7 @@ session_destroy();
         <title>Login</title>
         <link rel="stylesheet" type="text/css" href="../bootstrap/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="css/login.css">
-        <link href="../bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+        <link href="../bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
         <script src="login.js"></script>
         <script src="loginAjax.js"></script>

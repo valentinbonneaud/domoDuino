@@ -105,6 +105,17 @@ var last$i = null; // the first time that the script will run this
 // The first time, the post value will be null and like that the php script
 // will now that all the data is needed
 
+function addMeasure(data, place, unit) {
+
+	$(place).empty();
+
+	if(data != null)
+		$(place).append(data+' '+unit);
+	else
+		$(place).append('No data available');
+}
+
+
 /**
  * Request data from the server, add it to the graph and set a timeout 
  * to request again
@@ -143,54 +154,26 @@ function requestData$i() {
 
 		///// Statistics part //////
 
-		$('#lastMeasure$i').empty();
-		$('#lastMeasure$i').append(stats['lastMeasure']['value']+' ".$sen[$i]['unit']."');
-		$('#yesturday$i').empty();
-		$('#yesturday$i').append(stats['yesturday']['value']+' ".$sen[$i]['unit']."');
+		addMeasure((stats['lastMeasure'] == null) ? null : stats['lastMeasure']['value'], '#lastMeasure$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['yesturday'] == null) ? null : stats['yesturday']['value'], '#yesturday$i', '".$sen[$i]['unit']."');
+		addMeasure(stats['textNight'], '#textLastNight$i', '".$sen[$i]['unit']."');
+		addMeasure(stats['textDay'], '#textLastDay$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastHour'] == null) ? null : stats['lastHour']['average'], '#lastHourAvg$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['last24Hour'] == null) ? null : stats['last24Hour']['average'], '#last24HourAvg$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastDay'] == null) ? null : stats['lastDay']['average'], '#lastDayAvg$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastNight'] == null) ? null : stats['lastNight']['average'], '#lastNightAvg$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastHour'] == null) ? null : stats['lastHour']['min'], '#lastHourMin$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['last24Hour'] == null) ? null : stats['last24Hour']['min'], '#last24HourMin$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastDay'] == null) ? null : stats['lastDay']['min'], '#lastDayMin$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastNight'] == null) ? null : stats['lastNight']['min'], '#lastNightMin$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastHour'] == null) ? null : stats['lastHour']['max'], '#lastHourMax$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['last24Hour'] == null) ? null : stats['last24Hour']['max'], '#last24HourMax$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastDay'] == null) ? null : stats['lastDay']['max'], '#lastDayMax$i', '".$sen[$i]['unit']."');
+		addMeasure((stats['lastNight'] == null) ? null : stats['lastNight']['max'], '#lastNightMax$i', '".$sen[$i]['unit']."');
+		addMeasure(stats['avgLast5Days'], '#avgLast5Days$i', '".$sen[$i]['unit']."');
+		addMeasure(stats['lastMonth'], '#lastMonth$i', '".$sen[$i]['unit']."');
+		addMeasure(stats['lastYear'], '#lastYear$i', '".$sen[$i]['unit']."');
 
-		$('#textLastDay$i').empty();
-		$('#textLastDay$i').append(stats['textDay']);
-		$('#textLastNight$i').empty();
-		$('#textLastNight$i').append(stats['textNight']);
-		$('#lastHourAvg$i').empty();
-		$('#lastHourAvg$i').append(stats['lastHour']['average']+' ".$sen[$i]['unit']."');
-		$('#last24HourAvg$i').empty();
-		$('#last24HourAvg$i').append(stats['last24Hour']['average']+' ".$sen[$i]['unit']."');
-		$('#lastDayAvg$i').empty();
-		$('#lastDayAvg$i').append(stats['lastDay']['average']+' ".$sen[$i]['unit']."');
-		$('#lastNightAvg$i').empty();
-		$('#lastNightAvg$i').append(stats['lastNight']['average']+' ".$sen[$i]['unit']."');
-		$('#lastHourMin$i').empty();
-		$('#lastHourMin$i').append(stats['lastHour']['min']+' ".$sen[$i]['unit']."');
-		$('#last24HourMin$i').empty();
-		$('#last24HourMin$i').append(stats['last24Hour']['min']+' ".$sen[$i]['unit']."');
-		$('#lastDayMin$i').empty();
-		$('#lastDayMin$i').append(stats['lastDay']['min']+' ".$sen[$i]['unit']."');
-		$('#lastNightMin$i').empty();
-		$('#lastNightMin$i').append(stats['lastNight']['min']+' ".$sen[$i]['unit']."');
-		$('#lastHourMax$i').empty();
-		$('#lastHourMax$i').append(stats['lastHour']['max']+' ".$sen[$i]['unit']."');
-		$('#last24HourMax$i').empty();
-		$('#last24HourMax$i').append(stats['last24Hour']['max']+' ".$sen[$i]['unit']."');
-		$('#lastDayMax$i').empty();
-		$('#lastDayMax$i').append(stats['lastDay']['max']+' ".$sen[$i]['unit']."');
-		$('#lastNightMax$i').empty();
-		$('#lastNightMax$i').append(stats['lastNight']['max']+' ".$sen[$i]['unit']."');
-		$('#avgLast5Days$i').empty();
-		if(stats['avgLast5Days'] != null)
-			$('#avgLast5Days$i').append(stats['avgLast5Days']+' ".$sen[$i]['unit']."');
-		else
-			$('#avgLast5Days$i').append('No data available');
-		$('#lastMonth$i').empty();
-		if(stats['lastMonth'] != null)
-			$('#lastMonth$i').append(stats['lastMonth']+' ".$sen[$i]['unit']."');
-		else
-			$('#lastMonth$i').append('No data available');
-		$('#lastYear$i').empty();
-		if(stats['lastYear'] != null)
-			$('#lastYear$i').append(stats['lastYear']+' ".$sen[$i]['unit']."');
-		else
-			$('#lastYear$i').append('No data available');
 	}
             
 	// call it again after one second	

@@ -3,16 +3,20 @@ var App = App || {};
 App.ajax = (function($){
 	var ACTION = {
 		on: 'on',
-		off: 'off'
+		off: 'off',
+		submitAlarm: 'submitAlarm'
 	}
 
 	var backEndAddr = {
-		switchP: 'backend/backendSwitch.php'
+		switchP: 'backend/backendSwitch.php',
+		alarm: 'backend/backendAlarm.php'
 	}
 
 	function getAddress(action){
 		if(action == ACTION.on || action == ACTION.off){
 			return backEndAddr.switchP;
+		} else if(action == ACTION.submitAlarm){
+			return backEndAddr.alarm;
 		} else {
 			return false;
 		}
@@ -26,7 +30,7 @@ App.ajax = (function($){
 			}
 			
 
-			if(action == ACTION.on || action == ACTION.off){
+			if(action == ACTION.on || action == ACTION.off || action == ACTION.submitAlarm){
 				$.ajax({
 					url: address,
 					type: 'POST',

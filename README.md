@@ -5,7 +5,7 @@ This is a personal domotic &amp; weather station project with an Arduino UNO.
 
 The domotic part is constitued of 8 programables outputs (relays) controllable with an IR remote and through a webserver (on/off buttons and clock automaton).
 
-There is also a weather station part which measure various informations such as temperature, humidity and radiation (beta and gamma). All the data is sent to a remote server for storage and visualization.
+There is also a weather station part which measure various informations such as temperature, humidity and radiation (beta and gamma). All the data is sent to a remote server for storage and visualization. There is also a small screen connected directly to the system, to display a short summary of the measurements.
 
 Domotic
 ---------
@@ -26,9 +26,10 @@ The weather station is contitued of
 
 - DS18X20 (1-Wire) temperature sensors,
 - DHT11 humidity (and temperature) sensors,
-- SBM-20/BOI-33 Geiger tube with detector board.
+- SBM-20/BOI-33 Geiger tube with detector board,
+- BMP180 - Presure sensor.
 
-All the sensors' informations are sent to a webserver with PHP/JS and MySQL for handling the data. This server is accessible via a web browser to diplay HTML5 graph of the measurements (over differents time axis) and some statistics.
+All the sensors' informations are sent to a webserver with PHP/JS and MySQL for handling the data. This server is accessible via a web browser to diplay HTML5 graph of the measurements (over differents time axis) and some statistics. Some measurements are also directly visible on a screen on top of the arduino.
 
 Schema
 -------------
@@ -45,7 +46,12 @@ There is a README in each part for more precise details on the implementation.
 History
 ------------
 
-Last version : v0.4 - Still under development
+Last version : v1.0 - First version with all the functionalities working !
+
+v1.0 :
+
+- Arduino side : Screen added, BMP180 (presure sensor) added, Geiger board added and RTC added. Modification of the structure of the program, now the submition interval is set in minutes and no longer in numbers of loops. All the program is clocked with the RTC.
+- Server side : Timer on the outputs added.
 
 v0.4 :
 

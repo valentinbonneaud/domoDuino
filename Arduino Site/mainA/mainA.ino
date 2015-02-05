@@ -53,13 +53,13 @@ byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
 IPAddress serverIP(1,2,3,4);
 String serverIPString = "1.2.3.4";
 // put the location of the submission part on your server with the api key
-String page = "/arduino/submit.php?apikey=xxxxxxxxxxxxxxxxxxxxxxxxx";
+String page = "/arduino/submit.php?apikey=xxxxxxxxxxxxxxxxxx";
 
 // Micro sign for the LCD
 static const byte micro[] = { B11111111, B00001000, B00001000, B00000100, B00001111 };
 static const byte temp[] = { B00000000, B00000000, B00000110, B00000110, B00000000 };
 
-// IP configuration, you need to ajust this values to your subnet
+// IP configuration
 IPAddress ip(192,168,1,150);
 IPAddress gateway(192,168,1,1);
 
@@ -73,7 +73,7 @@ unsigned long irActions[] = {21845, 21845, 21845, 21845, 21845, 21845, 21845, 21
 
 
 #define DEBUG true // To activate the Serial.print calls
-#define NB_SEC_POST 60 // Set the number of second between two updates to the server
+#define NB_SEC_POST 900 // Set the number of second between two updates to the server
 #define PORT_SERVER 80 // Port number of the arduino webserver, usefull to configure the port forwarding
 // on your NAT and also to configure the website
 
@@ -110,12 +110,12 @@ int PIN_OUTPUT_RELAYS_STOP = PIN_OUTPUT_RELAYS_START + NB_OUTPUTS - 1;
 #define ADDRESS_EEPROM 0x50 // I2C address of the EEPROM (only the 7 first bits)
 
 // LCD
-#define NB_SEC_SCREEN 5 // Set the number of second between two updates of the screen data
+#define NB_SEC_SCREEN 10 // Set the number of second between two updates of the screen data
 #define LINE_TEMP1 0
 #define addressSensorLine1 "xxxx" // Address of the sensor that we want to display on the first line of the screen
 #define textLine1 "Ext. " // Short (no more than 7 characters) intro of the sensor to display on the screen
 #define LINE_TEMP2 1
-#define addressSensorLine2 "yyyyy" // Address of the sensor that we want to display on the second line of the screen
+#define addressSensorLine2 "yyyy" // Address of the sensor that we want to display on the second line of the screen
 #define textLine2 "Int. " // Short (no more than 7 characters) intro of the sensor to display on the screen
 #define LINE_HUMIDITY 2
 #define LINE_PRESURE 3
@@ -133,7 +133,6 @@ int PIN_OUTPUT_RELAYS_STOP = PIN_OUTPUT_RELAYS_START + NB_OUTPUTS - 1;
 //////// Ethernet ///////
 EthernetClient client;
 EthernetServer server(PORT_SERVER);
-String post = "";
 String GETData;
 unsigned long arrayResults[3];
 //////// IR Remote ///////
@@ -392,7 +391,6 @@ void printDebug(String s) {
 // Add a sensor value to the data
 String addValuePost(String address, String data) {
   printlnDebug("We add : ("+address+","+data+") : " + "data["+String(nbSensors)+"][address]=" + address + "&data["+String(nbSensors)+"][value]="+data+"&");
-// TO DELETE // post = post + "data["+String(nbSensors)+"][address]=" + address + "&data["+String(nbSensors)+"][value]="+data+"&"; 
   nbSensors++;
   // We need to put nbSensors-1 because we increment it juste before !
   return "data["+String(nbSensors-1)+"][address]=" + address + "&data["+String(nbSensors-1)+"][value]="+data+"&";
@@ -407,7 +405,7 @@ void pushDataToServer() {
   nbSensors=0;
   String oneWire = updateOneWire(false);
   String presure = updatePresure(false);
-  //String humidity = updateHumidity(false);
+  String humidity = updateHumidity(false);
   String geiger = updateGeigerCounter(false);
   
   if (client.connect(serverIP, 80)) {
@@ -423,17 +421,15 @@ void pushDataToServer() {
     printDebug(oneWire);
     client.print(presure);
     printDebug(presure);
-    //client.print(humidity);
-    //printDebug(humidity);
+    client.print(humidity);
+    printDebug(humidity);
     client.print(geiger);
     printlnDebug(geiger);
-    //TO DELETE client.print(post);
     client.println(" HTTP/1.1");
     client.println("Host: "+serverIPString);
     client.println("Connection: close");
     client.println();
     client.stop();
-    //TO DELETE printlnDebug(post);
   } 
   else {
     // if you didn't get a connection to the server:
@@ -978,12 +974,6 @@ void loop(void) {
   if(now.secondstime() - currentTimePost > NB_SEC_POST) {
     currentTimePost = now.secondstime(); // we saved the last time that we post the data
     
-    // We reset the number of sensors, and the post data  
-    post = "";
-    nbSensors = 0;
-    
-    
-        
     // We send the data to the server
     pushDataToServer();
 
@@ -995,16 +985,13 @@ void loop(void) {
     
     // Screen to display is the summary of the measurements
     if(screenToDisplay == 0) {
-      // We reset the number of sensors, and the post data  
-      post = "";
-      nbSensors = 0;
       
       clearLCD();
       // We update the sensors, take 1s per OneWire sensor, 1s per humidity sensor, the
       // others are negligible
       updateOneWire(true);
       updatePresure(true);
-      //updateHumidity(true);
+      updateHumidity(true);
       updateGeigerCounter(true);
     } else if (screenToDisplay == 1) { // the screen to display is the summary of the outputs
       

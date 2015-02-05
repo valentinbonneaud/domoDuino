@@ -36,8 +36,9 @@ I will define here some formats that are used in this project
 
 First when we send the state of the relays or when we receive commands for the relays (or for the configuration of the IR actions), I used the following format :
 
-Output nb : 7  6  5  4  3  2  1  0
-            -- -- -- -- -- -- -- --
+Output nb : <br>
+7  6  5  4  3  2  1  0<br>
+-- -- -- -- -- -- -- --<br>
 each -- is two bits and correspond to one output,
 0b01 = do nothing
 0b10 = on
@@ -47,7 +48,7 @@ So for example, if the server when to know the state of the outputs, the arduino
 
 Secondly, we will use the following format to transfer the timer data :
 
-timer = reverse + 2*( days + 128*( 60*hour_duration+minutes_durations + 1440*( 60*hour_alarm + minutes_alarm ) ) ) 
+timer = reverse + 2\*( days + 128\*( 60\*hour_duration+minutes_durations + 1440\*( 60\*hour_alarm + minutes_alarm ) ) ) 
 
 Where :
 
